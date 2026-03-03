@@ -39,6 +39,7 @@ func main() {
 	app := fiber.New(config)
 	apiV1 := app.Group("api/v1")
 
+	apiV1.Post("/user", userHandler.HandlePostUser)
 	apiV1.Get("/user", userHandler.HandleGetUsers)
 	apiV1.Get("/user/:id", userHandler.HandleGetUser)
 	if err := app.Listen(*listenAddr); err != nil {
