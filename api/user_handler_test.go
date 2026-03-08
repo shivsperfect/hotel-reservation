@@ -16,11 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-const (
-	testDbUri = "mongodb://localhost:27017"
-	dbname    = "hotel-reservation-test"
-)
-
 type testdb struct {
 	db.UserStore
 }
@@ -32,7 +27,7 @@ func (tdb *testdb) tearDown(t *testing.T) {
 }
 
 func setup(t *testing.T) *testdb {
-	clientOpts := options.Client().ApplyURI(testDbUri)
+	clientOpts := options.Client().ApplyURI(db.DBURI)
 	clientOpts.SetBSONOptions(&options.BSONOptions{
 		ObjectIDAsHexString: true,
 	})
@@ -42,7 +37,7 @@ func setup(t *testing.T) *testdb {
 	}
 
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, dbname),
+		UserStore: db.NewMongoUserStore(client, db.TEST_DBNAME),
 	}
 
 }
