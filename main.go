@@ -32,12 +32,17 @@ func main() {
 	}
 
 	var (
+		hotelStore = db.NewMongoHotelStore(client)
+		roomStore  = db.NewMongoRoomStore(client, hotelStore)
+		userStore  = db.NewMongoUserStore(client)
+		store      = &db.Store{
+			User:  userStore,
+			Hotel: hotelStore,
+			Room:  roomStore,
+		}
 		// handlers initialization
-		userHandler  = api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME))
-		hotelStore   = db.NewMongoHotelStore(client)
-		roomStore    = db.NewMongoRoomStore(client, hotelStore)
-		hotelHandler = api.NewHotelHandler(hotelStore, roomStore)
-
+		userHandler  = api.NewUserHandler(userStore)
+		hotelHandler = api.NewHotelHandler(store)
 		// fiber app initialization
 		app   = fiber.New(config)
 		apiV1 = app.Group("api/v1")
@@ -52,6 +57,8 @@ func main() {
 
 	// hotel handlers
 	apiV1.Get("/hotels", hotelHandler.HandleGetHotels)
+	apiV1.Get("/hotels/:id", hotelHandler.HandleGetHotel)
+	apiV1.Get("/hotels/:id/rooms", hotelHandler.HandleGetRooms)
 
 	if err := app.Listen(*listenAddr); err != nil {
 		fmt.Println("Error starting server: ", err)

@@ -26,7 +26,7 @@ func init() {
 		log.Fatal(err)
 	}
 
-	if err := client.Database(db.DBNAME).Drop(context.Background()); err != nil {
+	if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
 		log.Fatal(err)
 	}
 
@@ -49,26 +49,26 @@ func seeHotel(name, location string, rating int) {
 	}
 	rooms := []types.Room{
 		{
-			Type:      types.SingleRoomType,
-			BasePrice: 99.9,
+			Size:  "single",
+			Price: 99.9,
 		},
 		{
-			Type:      types.DoubleRoomType,
-			BasePrice: 149.9,
+			Size:  "double",
+			Price: 149.9,
 		},
 		{
-			Type:      types.DeluxeRoomType,
-			BasePrice: 199.9,
+			Size:  "deluxe",
+			Price: 199.9,
 		},
 	}
-	insertedHotel, err := hotelStore.Insert(context.Background(), &hotel)
+	insertedHotel, err := hotelStore.Insert(ctx, &hotel)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, room := range rooms {
 		room.HotelID = insertedHotel.ID
-		_, err := roomStore.InsertRoom(context.Background(), &room)
+		_, err := roomStore.InsertRoom(ctx, &room)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shivsperfect/hotel-reservation/types"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -10,6 +11,7 @@ import (
 
 type RoomStore interface {
 	InsertRoom(ctx context.Context, hotel *types.Room) (*types.Room, error)
+	GetRooms(ctx context.Context, filter bson.M) ([]*types.Room, error)
 }
 
 type MongoRoomStore struct {
@@ -41,4 +43,19 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 	}
 
 	return room, nil
+}
+
+func (s *MongoRoomStore) GetRooms(ctx context.Context, filter bson.M) ([]*types.Room, error) {
+	res, err := s.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var rooms []*types.Room
+	if err := res.All(ctx, &rooms); err != nil {
+		return nil, err
+	}
+	fmt.Println(filter, rooms)
+
+	return rooms, nil
 }
