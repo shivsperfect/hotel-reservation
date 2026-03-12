@@ -62,6 +62,10 @@ func isEmailValid(email string) bool {
 	return matched
 }
 
+func IsPasswordValid(encryptedPassword, password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password)) == nil
+}
+
 type User struct {
 	ID                bson.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string        `bson:"firstName" json:"firstName"`
